@@ -1,32 +1,33 @@
-import streamlit as st
-import pandas as pd
+import streamlit_chatbot as st
+import pandas as pd # pyright: ignore[reportMissingModuleSource]
 
-from streamlit_chatbot.chatbot import initialize_session_state, main, main
+from streamlit_chatbot.chatbot import initialize_session_state, main
 
-from streamlit_chatbot.chatbot import initialize_session_state
-initialize_session_state()  
+initialize_session_state()
+
 # Display chat messages from history
 for message in st.session_state.messages:
-with st.chat_message(message["role"]):
-st.write(message["content"])
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
 # Chat input
 if prompt := st.chat_input("What's on your mind?"):
-# Display user message
-with st.chat_message("user"):
-st.write(prompt)
-# Add user message to history
-st.session_state.messages.append({"role": "user", "content": prompt}) 
-# Add simple bot response
-response = f"You said: {prompt}"
-        
-# Display bot message
-with st.chat_message("assistant"):
-st.write(response)
-        
-# Add bot message to history
-st.session_state.messages.append({"role": "assistant", "content": response})
+    # Display user message
+    with st.chat_message("user"):
+        st.write(prompt)
+    # Add user message to history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Add simple bot response
+    response = f"You said: {prompt}"
 
-if __name__ == "__main__":    main()
+    # Display bot message
+    with st.chat_message("assistant"):
+        st.write(response)
+    # Add bot message to history
+    st.session_state.messages.append({"role": "assistant", "content": response})
+
+if __name__ == "__main__":
+    main()
 
 # Sample DataFrame
 df = pd.DataFrame({
