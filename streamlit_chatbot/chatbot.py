@@ -84,16 +84,111 @@ if st.session_state.quiz_active:
 
 
 # =========================================================================
-# SECTION 3: INTERACTIVE ELEMENTS
+# SECTION 3: STUDY REVISION HUB
 # =========================================================================
 st.markdown("---")
-st.header("📊 Interactive Elements")
+st.header("📚 Study Revision Hub")
 
-# Sample DataFrame from your sheet
-df = pd.DataFrame({
-    'Month': ['January', 'February', 'March', 'January'],
-    'Price': [1000, 1500, 2000, 1200]
-})
+st.write("Choose a subject to revise today!")
 
-# Displays the interactive table grid
-st.dataframe(df)
+# Subject selection
+subject = st.selectbox(
+    "Select Subject:",
+    ["Mathematics", "Science", "History", "English"]
+)
+
+# Different revision content for each subject
+if subject == "Mathematics":
+    st.subheader("➗ Mathematics Revision")
+    
+    chapter = st.radio(
+        "Choose a chapter:",
+        ["Algebra", "Trigonometry", "Probability"]
+    )
+    
+    if chapter == "Algebra":
+        st.info("📘 Formula: (a + b)² = a² + 2ab + b²")
+        answer = st.text_input("Solve: 5x + 3 = 18")
+        
+        if st.button("Check Math Answer"):
+            if answer.strip() == "3":
+                st.success("✅ Correct! Great job!")
+            else:
+                st.error("❌ Incorrect. Try again!")
+
+    elif chapter == "Trigonometry":
+        st.info("📐 sin²θ + cos²θ = 1")
+        st.write("Remember SOH CAH TOA!")
+
+    elif chapter == "Probability":
+        st.info("🎲 Probability = Number of favourable outcomes / Total outcomes")
+        st.write("Example: Probability of getting heads from a coin = 1/2")
+
+elif subject == "Science":
+    st.subheader("🧪 Science Revision")
+    
+    st.write("### Quick Facts")
+    st.success("🌍 Water boils at 100°C")
+    st.success("⚡ Humans have 206 bones")
+    st.success("🌱 Photosynthesis needs sunlight")
+
+    quiz = st.text_input("What gas do plants absorb?")
+    
+    if st.button("Check Science Answer"):
+        if quiz.lower() == "carbon dioxide":
+            st.success("✅ Correct!")
+        else:
+            st.error("❌ Try again!")
+
+elif subject == "History":
+    st.subheader("🏛️ History Revision")
+    
+    st.write("### Important Dates")
+    
+    history_df = pd.DataFrame({
+        "Event": [
+            "World War 1 Begins",
+            "Malaysia Independence",
+            "Moon Landing"
+        ],
+        "Year": [
+            1914,
+            1957,
+            1969
+        ]
+    })
+
+    st.table(history_df)
+
+elif subject == "English":
+    st.subheader("📖 English Revision")
+    
+    word = st.text_input("Enter a word to learn its synonym:")
+    
+    synonyms = {
+        "happy": "joyful",
+        "sad": "unhappy",
+        "smart": "intelligent"
+    }
+
+    if word:
+        if word.lower() in synonyms:
+            st.success(f"✨ Synonym: {synonyms[word.lower()]}")
+        else:
+            st.warning("No synonym found in mini dictionary.")
+
+# Study progress tracker
+st.markdown("---")
+st.write("### 🎯 Daily Study Progress")
+
+progress = st.slider("How much have you studied today?", 0, 100, 40)
+
+st.progress(progress / 100)
+
+if progress >= 80:
+    st.balloons()
+    st.success("🔥 Amazing productivity today!")
+elif progress >= 50:
+    st.info("👍 Good progress! Keep going!")
+else:
+    st.warning("📚 Time to focus and study more!")
