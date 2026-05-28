@@ -90,86 +90,99 @@ if menu == "🏠 Dashboard":
     st.info("Welcome back! Use the sidebar panel to jump between your active revision notes, check up on your virtual pet, or handle assignments.")
 
 # =========================================================================
-# 2. AI STUDY CHAT
+# 2. AI STUDY CHAT (Powered with actual responses)
+# =========================================================================
+# =========================================================================
+# 2. AI STUDY CHAT (Replaced with Motivational Quote)
 # =========================================================================
 elif menu == "🤖 AI Study Chat":
     st.header("🤖 AI Study Chat")
-    st.write("Brainstorm concepts or review study tasks dynamically below.")
     
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-
-    if prompt := st.chat_input("Ask me anything about studying..."):
-        with st.chat_message("user"):
-            st.write(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt})
-
-        response = f"📚 Study Bot says: Keep going! You asked: {prompt}"
-        with st.chat_message("assistant"):
-            st.write(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-
+    # Large motivational quote styling
+    st.markdown("### 💡 Words of Encouragement")
+    st.success("✨ **Go study!!! Then you will know the answer!** ✨")
+    
+    # Optional: Add a fun little subtext or image/icon below it
+    st.info("The AI is taking a break to let your own brain shine. Get to work! 📝")
 # =========================================================================
-# 3. REVISION HUB
+# =========================================================================
+# =========================================================================
+# 1. REVISION HUB (With Interactive Answer Checking)
 # =========================================================================
 elif menu == "📚 Revision Hub":
-    st.header("📚 Study Revision Hub")
+    st.header("📚 Revision Hub")
+
+    # 1. Categorized question pool (10 different questions/formulas)
+    revision_pool = {
+        "📐 Mathematics": [
+            {"topic": "Quadratic Formula", "content": "What is the Quadratic Formula? (Use variables a, b, c)", "plain_answer": "x = (-b +- sqrt(b^2 - 4ac)) / 2a", "display_answer": "$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$"},
+            {"topic": "Calculus", "content": "What is the derivative of ln(x)?", "plain_answer": "1/x", "display_answer": "$$\\frac{1}{x}$$"},
+            {"topic": "Geometry", "content": "What is the area of a circle? (Use r for radius)", "plain_answer": "pi r^2", "display_answer": "$$A = \\pi r^2$$"},
+            {"topic": "Trigonometry", "content": "What does sin^2(theta) + cos^2(theta) equal?", "plain_answer": "1", "display_answer": "$$\\sin^2(\\theta) + \\cos^2(\\theta) = 1$$"}
+        ],
+        "⚡ Physics": [
+            {"topic": "Force", "content": "What is Newton's Second Law formula? (Force = Mass x Acceleration)", "plain_answer": "F = ma", "display_answer": "$$F = ma$$"},
+            {"topic": "Einstein's Relativity", "content": "What is the Mass-Energy equivalence formula?", "plain_answer": "E = mc^2", "display_answer": "$$E = mc^2$$"},
+            {"topic": "Electricity", "content": "What is Ohm's Law formula? (Voltage = Current x Resistance)", "plain_answer": "V = IR", "display_answer": "$$V = IR$$"}
+        ],
+        "🧪 Chemistry": [
+            {"topic": "Gas Laws", "content": "What is the ideal gas law equation?", "plain_answer": "PV = nRT", "display_answer": "$$PV = nRT$$"},
+            {"topic": "Moles", "content": "What is the formula for moles? (Mass / Molar Mass)", "plain_answer": "n = m/M", "display_answer": "$$n = \\frac{m}{M}$$"},
+            {"topic": "pH Scale", "content": "What is the formula to calculate pH?", "plain_answer": "-log[H+]", "display_answer": "$$\\text{pH} = -\\log[H^+]$$"}
+        ]
+    }
+
+    # 2. Subject Selection Dropdown
+    subject = st.selectbox("🎯 Choose a Subject:", list(revision_pool.keys()))
+
+    # Initialize session state tracking for the selected subject
+    if "current_revision" not in st.session_state or st.session_state.get("current_subject") != subject:
+        st.session_state.current_subject = subject
+        st.session_state.current_revision = random.choice(revision_pool[subject])
+        st.session_state.show_answer = False
+        st.session_state.user_evaluated = False
+
+    current = st.session_state.current_revision
+
+    # 3. Next Question Button
+    if st.button("🔄 Next Question"):
+        st.session_state.current_revision = random.choice(revision_pool[subject])
+        st.session_state.show_answer = False
+        st.session_state.user_evaluated = False
+        st.rerun()
+
+    # Display Content
+    st.markdown(f"### **Topic:** {current['topic']}")
+    st.info(f"❓ {current['content']}")
+
+    # 4. Answer Input Space
+    user_answer = st.text_input("✍️ Type your answer here:", key="answer_input")
     
-    subject = st.selectbox("Select Subject Matrix:", ["Mathematics", "Science", "English", "History"])
+    col1, col2 = st.columns(2)
+    with col1:
+        submit_btn = st.button("✔️ Check Answer")
+    with col2:
+        show_btn = st.button("👁️ Reveal Formula")
 
-    if subject == "Mathematics":
-        st.subheader("➗ Mathematics Revision")
-        chapter = st.radio("Choose Chapter:", ["Algebra", "Trigonometry", "Probability"])
+    # 5. Correct/Wrong Detection Logic
+    if submit_btn:
+        st.session_state.user_evaluated = True
+        # Clean up strings to make matching less strict (ignore spaces and casing)
+        clean_user = user_answer.replace(" ", "").lower()
+        clean_correct = current['plain_answer'].replace(" ", "").lower()
         
-        if chapter == "Algebra":
-            st.info("📘 Formula: $(a + b)^2 = a^2 + 2ab + b^2$")
-            answer = st.text_input("Solve: 2x + 8 = 20")
-            if st.button("Check Answer"):
-                if answer.strip() == "6":
-                    st.success("✅ Correct! +10 Pet XP Added!")
-                    st.session_state.hamster_xp += 10
-                    play_sound(CORRECT_SOUND)
-                    st.balloons()
-                else:
-                    st.error("❌ Wrong answer!")
-                    play_sound(WRONG_SOUND)
-        elif chapter == "Trigonometry":
-            st.info("📐 $sin^2θ + cos^2θ = 1$")
-            st.write("Remember SOH CAH TOA!")
-        elif chapter == "Probability":
-            st.info("🎲 Probability = Favorable Outcomes / Total Outcomes")
+        if clean_user == clean_correct:
+            st.success("🎉 Correct! Fantastic job!")
+        else:
+            st.error(f"❌ Not quite! Check your formatting or try again.")
+            st.caption(f"💡 Hint: Try to match this format layout: `{current['plain_answer']}`")
 
-    elif subject == "Science":
-        st.subheader("🧪 Science Revision")
-        st.success("🌱 Photosynthesis uses sunlight.")
-        st.success("⚡ Humans have 206 bones.")
-        
-        science = st.text_input("What planet do we live on?")
-        if st.button("Submit Science Quiz"):
-            if science.strip().lower() == "earth":
-                st.success("🌎 Correct! +10 Pet XP Added!")
-                st.session_state.hamster_xp += 10
-                play_sound(CORRECT_SOUND)
-            else:
-                st.error("❌ Try again!")
-                play_sound(WRONG_SOUND)
+    if show_btn:
+        st.session_state.show_answer = True
 
-    elif subject == "English":
-        st.subheader("📖 English Revision")
-        word = st.text_input("Enter a word for a synonym check:")
-        synonyms = {"happy": "joyful", "sad": "unhappy", "smart": "intelligent"}
-        if word and word.lower() in synonyms:
-            st.success(f"✨ Synonym: {synonyms[word.lower()]}")
-
-    elif subject == "History":
-        st.subheader("🏛️ History Revision")
-        history_df = pd.DataFrame({
-            "Event": ["WW1 Begins", "Malaysia Independence", "Moon Landing"],
-            "Year": [1914, 1957, 1969]
-        })
-        st.dataframe(history_df, use_container_width=True)
-
+    if st.session_state.get("show_answer", False):
+        st.markdown("#### **Correct Formula:**")
+        st.write(current['display_answer'])
 # =========================================================================
 # 4. PRODUCTIVITY TRACKER
 # =========================================================================
@@ -209,17 +222,41 @@ elif menu == "⏰ Productivity Tracker":
 # =========================================================================
 # 5. SMART PROGRESS TRACKER
 # =========================================================================
+# =========================================================================
+# 5. SMART PROGRESS TRACKER
+# =========================================================================
 elif menu == "🎯 Progress Tracker":
     st.header("📊 Smart Study Progress Tracker")
     
+    # 1. Initialize a persistent dictionary in session state if it doesn't exist
+    if "progress_records" not in st.session_state:
+        st.session_state.progress_records = {}
+        for sub, sub_topics in SUBJECTS_DATA.items():
+            for t in sub_topics:
+                # Key format: "Subject_Topic" -> False (Not completed by default)
+                st.session_state.progress_records[f"{sub}_{t}"] = False
+
     selected_subject = st.selectbox("Choose Subject to Review Progress", list(SUBJECTS_DATA.keys()))
     topics = SUBJECTS_DATA[selected_subject]
     
     st.subheader(f"📚 {selected_subject} Chapters Completion")
+    
+    # 2. Render checkboxes using the persistent state dictionary
     completed_count = 0
     for topic in topics:
         key_name = f"{selected_subject}_{topic}"
-        if st.checkbox(f"✅ Completed: {topic}", key=key_name):
+        
+        # Pull the stored value from session_state as the default value
+        is_checked = st.checkbox(
+            f"✅ Completed: {topic}", 
+            value=st.session_state.progress_records[key_name],
+            key=f"cb_{key_name}" # Unique key for the widget instance
+        )
+        
+        # Save any changes back to our persistent record right away
+        st.session_state.progress_records[key_name] = is_checked
+        
+        if is_checked:
             completed_count += 1
             
     # Subject Specific Calculations
@@ -231,8 +268,10 @@ elif menu == "🎯 Progress Tracker":
     # Global Calculations across all checklists
     st.markdown("---")
     st.subheader("🌍 Overall Study Completion Metrics")
+    
     overall_total = sum(len(sub_topics) for sub_topics in SUBJECTS_DATA.values())
-    overall_completed = sum(1 for sub_name, sub_topics in SUBJECTS_DATA.items() for t in sub_topics if st.session_state.get(f"{sub_name}_{t}", False))
+    # Count how many total elements are set to True in our persistent records
+    overall_completed = sum(1 for val in st.session_state.progress_records.values() if val)
     
     overall_progress = int((overall_completed / overall_total) * 100)
     st.progress(overall_progress / 100)
