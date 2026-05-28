@@ -270,23 +270,19 @@ h1, h2, h3 {
 
 </style>
 """, unsafe_allow_html=True)
+def play_correct_sound():
+    st.markdown("""
+        <audio autoplay style="display:none;">
+        <source src="https://www.soundjay.com/buttons/sounds/button-3.mp3" type="audio/mp3">
+        </audio>
+    """, unsafe_allow_html=True)
 
-# =========================================================================
-# SOUND EFFECT FUNCTION
-# =========================================================================
-def autoplay_audio(file_path: str):
-    with open(file_path, "rb") as f:
-        data = f.read()
-
-    b64 = base64.b64encode(data).decode()
-
-    md = f"""
-    <audio autoplay="true">
-    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-    </audio>
-    """
-
-    st.markdown(md, unsafe_allow_html=True)
+def play_wrong_sound():
+    st.markdown("""
+        <audio autoplay style="display:none;">
+        <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mp3">
+        </audio>
+    """, unsafe_allow_html=True)
 
 # =========================================================================
 # TITLE
@@ -364,15 +360,6 @@ with btn2:
         st.error("🚨 Procrastination Detected!")
 
 # =========================================================================
-# SOUND EFFECTS
-# =========================================================================
-CORRECT_SOUND = "https://www.soundjay.com/buttons/sounds/button-3.mp3"
-WRONG_SOUND = "https://www.soundjay.com/buttons/sounds/button-10.mp3"
-
-def play_sound(sound_url):
-    st.audio(sound_url, format="audio/mp3", autoplay=True)
-
-# =========================================================================
 # REVISION HUB
 # =========================================================================
 st.markdown("---")
@@ -401,11 +388,11 @@ if subject == "Mathematics":
         if st.button("Check Answer"):
             if answer == "6":
                 st.success("✅ Correct!")
-                play_sound(CORRECT_SOUND)
+                play_correct_sound()
                 st.balloons()
             else:
                 st.error("❌ Wrong answer!")
-                play_sound(WRONG_SOUND)
+                play_wrong_sound()
 
 elif subject == "Science":
 
